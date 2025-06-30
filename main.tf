@@ -1,119 +1,90 @@
-# Create custom VPC
-resource "aws_vpc" "custom_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-  
-  tags = {
-    Name = "custom-vpc"
-  }
+provider "aws" {
+  region = "il-central-1"
 }
 
-# Create Internet Gateway
-resource "aws_internet_gateway" "custom_igw" {
-  vpc_id = aws_vpc.custom_vpc.id
-  
-  tags = {
-    Name = "custom-igw"
-  }
+variable "vpc_id" {
+  default = "vpc-042cee0fdc6a5a7e2" # <-- the vpc id we worked on the imtech aws 
 }
 
-# Create public subnet
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.custom_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
-  
-  tags = {
-    Name = "public-subnet"
-  }
+variable "private_subnet_id" {
+  default = ["subnet-01e6348062924d048",
+    "subnet-0a1cbd99dd27a5307",
+    "subnet-0d0b0b1b77639731b",
+    "subnet-088b7d937a4cd5d85"]# <-- the subnets id we worked on the imtech aws 
 }
 
-# Create private subnet
-resource "aws_subnet" "private_subnet" {
-  vpc_id            = aws_vpc.custom_vpc.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1b"
-  
-  tags = {
-    Name = "private-subnet"
-  }
+variable "ssh_key_name" {
+  default = "my-key" # <-- replace with your key pair name
 }
 
-# Create route table for public subnet
-resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.custom_vpc.id
-  
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.custom_igw.id
-  }
-  
-  tags = {
-    Name = "public-route-table"
-  }
-}
 
-# Associate route table with public subnet
-resource "aws_route_table_association" "public_rta" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_rt.id
-}
+resource "aws_security_group" "app_sg" {
+  name        = "app-sg"
+  description = "Allow SSH and MySQL"
+  vpc_id      = var.vpc_id
 
-# Create custom security group for web servers
-resource "aws_security_group" "web_sg" {
-  name        = "web-security-group"
-  description = "Security group for web servers"
-  vpc_id      = aws_vpc.custom_vpc.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "web-security-group"
-  }
-}
-
-# Create custom security group for database
-resource "aws_security_group" "db_sg" {
-  name        = "database-security-group"
-  description = "Security group for database servers"
-  vpc_id      = aws_vpc.custom_vpc.id
-
+ 
   ingress {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id]
+    security_groups = [aws_security_group.app_sg.id]
   }
 
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"        
+    cidr_blocks = ["0.0.0.0/0"]   
+  }
+}
+
+resource "aws_instance" "app" {
+  ami                    = "ami-0241b2b622c018ede"
+  instance_type          = "t3.micro"
+  subnet_id              = var.private_subnet_id
+  key_name               = var.ssh_key_name
+  vpc_security_group_ids = [aws_security_group.app_sg.id]
+
   tags = {
-    Name = "database-security-group"
+    Name = "shakedinstence"
+  }
+}
+
+
+resource "aws_db_subnet_group" "default" {
+  name       = "my-db-subnet-group"
+  subnet_ids = [var.private_subnet_id] 
+
+  tags = {
+    Name = "My DB subnet group"
+  }
+}
+
+
+resource "aws_db_instance" "mysql" {
+  identifier             = "my-mysql-db"
+  engine                 = "mysql"
+  engine_version         = "8.0.35"
+  instance_class         = "db.t3.micro"
+  allocated_storage      = 20
+  username               = "admin"
+  password               = "aA123456"
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+  vpc_security_group_ids = [aws_security_group.app_sg.id]
+  skip_final_snapshot    = true
+  publicly_accessible    = false
+
+  tags = {
+    Name = "My RDS DB"
   }
 }
