@@ -29,7 +29,10 @@ variable "load_balancer_arn" {
   description = "ARN of the existing Application Load Balancer"
   default     = "arn:aws:elasticloadbalancing:il-central-1:123456789012:loadbalancer/app/my-alb/abc123"
 }
-
+variable "image" {
+  description = "Docker image name with tag"
+  type        = string
+}
 
 
 resource "aws_ecs_task_definition" "nginx" {
@@ -42,7 +45,7 @@ resource "aws_ecs_task_definition" "nginx" {
   container_definitions = jsonencode([
     {
       name      = "nginx"
-      image     = "nginx:latest"
+      image     = var.image
       essential = true
       portMappings = [
         {
