@@ -1,0 +1,5 @@
+[all]
+localhost ansible_connection=local ansible_become_pass=9954
+
+[local]
+localhost ansible_connection=local ansible_become_pass=9954

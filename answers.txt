@@ -1,0 +1,46 @@
+here is the txt file for my answers:
+1. inode is a data storage stracture that contains file size and types, who can reach it(owner and group information), number of the hard links that point to the file and to the datablock where the file sit in that you can create and give to the linux only on setup 
+2. you can check how much free space you have letf if you run the command df -h, where df is the command that show all the disk usage and data stored, and the flag -h make it human readable.
+3. you may see all the ports that are in use with the command lsof -i, and if you want to see spacific port you can use |grep
+4. nginx, apachee,
+5. jenkins, gitlab, githabaction, argocd(only cd)
+6. dockerfile below
+7. the commands are: git checkout -b new-branch-name   git push -u origin new-branch-name # Push branch to GitHub
+git log --follow -- index.html and if you want to search only on specific branch add the branch name before the --follow
+to push a commit you need to do: git add . - add all the changes, then you need to do a git commit -m "add message of the commit" then git push
+8. you can do  git remote -v and it shows all the remote repos that connected
+9. we want to do git pull request everytime you want your branch to be pushed to the main branch or another branch
+10. ansible is an automation toll that configure multiple servers with the same yaml- playbook, before that you needed to setup every server manually
+11. nginx.yaml below
+12. jenkinsfile below - need to add the dockerhub cerdentials
+13. kubernetis came to fix the problem of a lot of dockers seperetly and combine them under one  master, that know how to divide the specs of the computer they need with the nodes,
+and can control and see all the pods-(dockers) in one place
+14. grafana and prometheus
+15. secrets - uses for secrets is any sensetive information you want your kubernetis control will know, like any ssh one of the pods or workers will need, passwords.
+service -  Service is a method for exposing a network application that is running as one or more Pods in your cluster
+deployment - manage pods to run an aplication if you want  more then one pod, and it see if all the pods run with all the healty checks
+16. clusterIP, nodeport, ingress and LoadBalancer
+17. LoadBalancer works with tcp/udp protocols on ports when every service need unique loadblancer, works with simple port forwards and por routes, ingress works with web protocols load balancing - one ingress can handle multipleservices with advanced route as path or domain and headers
+18.argocd watches git repos and deploy and manage aplication in k8s while jenkins build test package code and trigger by code commits and schedules, argocd is specific for k8s
+19. artifactory s3 and if you want to save container images you have ecr dockerhub 
+20. terraform define all the setup you need with hard code files and manages infrastracture codes
+21 need to do terraform
+22. we will use var.tf and call to it from the main terraform it is important to save all of them on the same repo because when you do terraform apply it apply all the files with .tf on the same repo
+23. the agent run the task automaticly  it execute the build job you made. it runs the commands and report back to the master and other then the automatic build it distribute the workload and let you run multiple jobs simultaneously
+24.we nneed to cordon the node with kubectl cordon node -name of the node, then we need to drain it with the kubectl drain node -name sometimes we will need to ignore the daemons that runs there and force the drain.
+25. admission control is security mechanism that vaildates requests before they are presisted in the cluster it enforce policies and can prevent unauthorized actions
+26.  curl -X GET and the url and use the |grep store.size
+27.  elastic search, logstash,kibana, cloudwatch, logstash takes logs and data from multiple sources as files database api logs, process it and give outputs data 
+28. ip:172.16.98.1/16  networkAddress:172.16.0.0  number of hosts:65,536 useable hosts:65,534
+    ip:185.76.32.11/29 networkAddress:185.76.32.8 number of hosts:8      useable hosts:6
+    ip:192.178.2.2/19  networkAddress:192.178.0.0 number of hosts:8,192  useable hosts:8,190
+29. 172.29.0.0/19 
+30. An Availability Zone (AZ) in AWS is an isolated data center within a region that provides redundancy and fault tolerance.
+31. iam role: is the premmisions on the aws, you create role with the premmisionsyou want anyone who has the iamrole id to have like role to let the ec2 to read files from the s3 bucket
+    tag: is a key value pairs you let aws resource you use to have easier track on them
+    RDS: is the database service aws gives and handles the tasks automatically it works with mySql postgresSql and more
+    Auto Scale Group: automatically adjust the number of instences you need based on the demand - like metric demands as cpu memory etc, it is smart protocol you can use to scale out - give more instences and scale down- shut down instences if you need less, it works with launch template- that is basically the yaml that have all the configuration that the instence need to work for your demend (if you got nginx server that is overload due to a lot of web request you need the launch template to be with the same nginx setup), the capacity you want - minimun, maximum, and desired(when the server is not overload this is the number of instences or nodes that will run) and health checks - health checks to see if the instence or the node uploaded right and working. there are 2 kinds of scale: horizontal and vertical as the horizontal adds more instences or   
+    Target Group:
+    Fargate:
+    S3:
+    security Group:
